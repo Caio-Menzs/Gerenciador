@@ -16,6 +16,7 @@ const Sidebar = ({ children }) => {
     <>
       <Layout>
         <Sider 
+          width={250}
           collapsed={collapsed} 
           collapsible 
           trigger={null}

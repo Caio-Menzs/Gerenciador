@@ -1,0 +1,31 @@
+.customer-form-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.customer-form-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid blue;
+  padding-bottom: 10px;
+}
+
+.customer-form .small-input input {
+  width: 200px; /* Defina o tamanho desejado */
+}
+
+.customer-form .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.customer-form .ant-form-item-label {
+  text-align: left;
+}
+
+.customer-form .ant-btn-primary {
+  width: 100%;
+}

@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Sidebar } from '../../components';
-import { Table, Button, Flex } from 'antd';
+import { Table, Button, Flex, Modal } from 'antd';
 import Space from '../../components/Space/Space';
 import Content from '../../components/Content/Content';
 import { PlusCircleOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import CustomerForm from './customerForm'; // Importe o formulário de cliente
+import StyledContainer from '../../components/Container/StyledContainer';
 
 const Customer = () => {
-  const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const getCustomers = async () => {
@@ -19,7 +20,7 @@ const Customer = () => {
         console.log('Dados recebidos:', response.data);
         const data = response.data.dados.map(customer => ({
           ...customer,
-          key: customer.id, 
+          key: customer.id,
         }));
         setCustomers(data);
         setLoading(false);
@@ -72,22 +73,40 @@ const Customer = () => {
     navigate(`/customers/form/${id}`);
   };
 
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
   return (
     <Sidebar>
       <Content>
         <Flex gap="small" wrap="wrap">
-          <Button type="primary" icon={<PlusCircleOutlined />} onClick={() => navigate("/customers/form")}>
+          <Button type="primary" icon={<PlusCircleOutlined />} onClick={showModal}>
             Adicionar Cliente
           </Button>
         </Flex>
         <Space size="20px" />
         <h3>Clientes</h3>
-        <Table 
-          columns={columns} 
-          dataSource={customers} 
-          loading={loading} 
-          rowKey="id" 
-        />
+        <StyledContainer>
+          <Table 
+            columns={columns} 
+            dataSource={customers} 
+            loading={loading} 
+            rowKey="id" 
+          />
+        </StyledContainer>
+        <Modal 
+          title="Novo Cliente" 
+          visible={isModalVisible} 
+          onCancel={handleCancel} 
+          footer={null} // remove os botões padrão do modal
+        >
+          <CustomerForm onClose={handleCancel} />
+        </Modal>
       </Content>
     </Sidebar>
   );

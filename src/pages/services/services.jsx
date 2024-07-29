@@ -6,6 +6,7 @@ import Content from '../../components/Content/Content';
 import { useNavigate } from "react-router-dom";
 import { PlusCircleOutlined } from '@ant-design/icons';
 import api from '../../services/api';
+import StyledContainer from '../../components/Container/StyledContainer';
 
 const Services = () => {
   const navigate = useNavigate();
@@ -77,12 +78,14 @@ const Services = () => {
         </Flex>
         <Space size="20px" />        
         <h3>Serviços</h3>
+        <StyledContainer>
         <Table 
           columns={columns} 
           dataSource={services} 
           loading={loading} 
           rowKey="id" 
         />
+        </StyledContainer>
       </Content>  
     </Sidebar>
   );
