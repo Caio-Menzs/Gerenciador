@@ -1,52 +1,72 @@
 
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {  Sidebar } from '../../components'
 import { Table, Tag, Button, Flex } from 'antd';
 import Space from '../../components/Space/Space';
 import Content from '../../components/Content/Content';
 import { useNavigate } from "react-router-dom"
 import {PlusCircleOutlined} from '@ant-design/icons'
+import api from '../../services/api';
+import StyledContainer from '../../components/Container/StyledContainer';
 
 
 const vehicles = () => {
-  const navigate = useNavigate();
+  const [vehicles, setVehicles] = useState([]);
+
+  useEffect(() => {
+    const getVehicles = async () => {
+    try {
+        const response = await api.get("/api/Veiculo");
+        console.log ("Dados recebidos:", response.data);
+        const data = response.data.dados.map(vehicles => ({
+          ...vehicles,
+          key: vehicles.id,
+        }));
+        setVehicles(data);
+      
+    } catch (error) {
+      console.error('Erro ao buscar veículo:', error);
+        setLoading(false);
+    }
+    };
+
+    getVehicles();
+  }, []);
 
   const columns = [
     {
       title: 'N°',
-      dataIndex: 'number',
-      key: '1',
+      dataIndex: 'id',
+      key: 'id',
       render: (text) => <a>{text}</a>,
     },
     {
       title: 'Placa',
-      dataIndex: 'name',
-      key: '2',
+      dataIndex: 'placa',
+      key: 'placa',
     },
     {
       title: 'Marca',
-      dataIndex: 'cpf',
-      key: '3',
+      dataIndex: 'marca',
+      key: 'marca',
     },
     {
       title: 'Modelo',
-      dataIndex: 'email',
-      key: '4',
+      dataIndex: 'modelo',
+      key: 'modelo',
     },
     {
       title: 'Cor',
-      dataIndex: 'telephone',
-      key: '5',
+      dataIndex: 'cor',
+      key: 'cor',
     
      
     },
     {
       title: 'Ano',
-      dataIndex: 'telephone',
-      key: '5',
-    
-     
+      key: 'ano',
+      render: (text, record) => `${record.anoFabricacao} / ${record.anoModelo}`,
     },
     {
       title: 'Ações',
@@ -54,45 +74,19 @@ const vehicles = () => {
      
     },
   ];
-  const data = [
-    {
-      key: '1',
-      name: 'Adrielle Fernandes Fonseca',
-      cpf: '509.169.368-80',
-      email: 'adriellefernandesfonseca@gmail.com',
-      telephone: '(16) 99346-4891',
-      number: 1,
-    },
-    {
-      key: '2',
-      name: 'Caio Menezes de Matos Luiz',
-      cpf: '448.645.818-43',
-      email: 'eucaiotucai@gmail.com',
-      telephone: '(16) 99248-1655',
-      number: 2,
-    },
-    {
-      key: '3',
-      name: 'Lucca Menezes de Matos Luiz',
-      cpf: '448.645.798-65',
-      email: 'luccagay@gmail.com',
-      telephone: '(16) 99788-2584',
-      number: 3,
-    },
-  ];
   
- 
- 
- 
+
   return (
     <Sidebar>
       <Content>
       <Flex gap="small" wrap="wrap">
         <Button type="primary" icon = {<PlusCircleOutlined />} onClick={() => navigate("/customers/form")}>Adicionar Veículo</Button>
         </Flex> 
+        <StyledContainer>
         <Space size="20px" />        
         <h3>Veículos</h3>
-        <Table columns={columns} dataSource={data} />
+        <Table columns={columns} dataSource={vehicles} />
+        </StyledContainer>
       </Content>  
     </Sidebar>
   )

@@ -9,6 +9,7 @@ import Content from '../../components/Content/Content';
 import Cards from '../../components/Cards/Cards';
 import { Button } from 'antd';
 import Space from '../../components/Space/Space';
+import StyledContainer from '../../components/Container/StyledContainer'
 
 const localizer = momentLocalizer(moment);
 
@@ -146,6 +147,7 @@ const Index = () => {
   return (
     <Sidebar> 
       <Content>
+        <StyledContainer>
         <div style={{ display: 'flex', flexDirection: 'row', padding: '20px' }}>
           <Cards title="Faturamento Total" content={<><DollarOutlined style={{ color: '#52c41a', backgroundColor: 'rgba(82, 196, 26, 0.25)', borderRadius: 20, fontSize: 24, padding: '8px' }} /> R$ 1000,00</>} />
           <div style={{ width: 60 }}></div> 
@@ -167,6 +169,7 @@ const Index = () => {
           min={new Date(moment().set({ hour: 8, minute: 0 }))}
           max={new Date(moment().set({ hour: 18, minute: 0 }))}
         />
+        </StyledContainer>
       </Content>
     </Sidebar>
   );
