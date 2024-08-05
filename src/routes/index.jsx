@@ -6,6 +6,8 @@ import Customer from "../pages/customer/customer";
 import CustomerForm from "../pages/customer/customerForm";
 import Services from "../pages/services/services";
 import Vehicles from "../pages/cars/cars";
+import VehicleForm from "../pages/cars/carsForm";
+
 
 const RoutesComponent = () => {
     return (
@@ -17,6 +19,7 @@ const RoutesComponent = () => {
             <Route path="/customers/form" element={<CustomerForm />} />
             <Route path="/services" element={<Services />} />
             <Route path="/cars" element={<Vehicles />} />
+            <Route path="/cars/form" element={<VehicleForm/>}/>
         </Routes>
     );
 };

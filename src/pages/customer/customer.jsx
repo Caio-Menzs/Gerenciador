@@ -13,6 +13,8 @@ const Customer = () => {
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  
+
   useEffect(() => {
     const getCustomers = async () => {
       try {
@@ -89,9 +91,10 @@ const Customer = () => {
             Adicionar Cliente
           </Button>
         </Flex>
-        <Space size="20px" />
-        <h3>Clientes</h3>
+     
         <StyledContainer>
+          
+        <h3>Clientes</h3>
           <Table 
             columns={columns} 
             dataSource={customers} 

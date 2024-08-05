@@ -1,38 +1,52 @@
-
-
-import React, { useState, useEffect } from 'react'
-import {  Sidebar } from '../../components'
-import { Table, Tag, Button, Flex } from 'antd';
-import Space from '../../components/Space/Space';
-import Content from '../../components/Content/Content';
-import { useNavigate } from "react-router-dom"
-import {PlusCircleOutlined} from '@ant-design/icons'
+import React, { useState, useEffect } from 'react';
+import { Sidebar } from '../../components';
+import { Table, Button, Input, Row, Col, Modal } from 'antd';
+import { useNavigate } from "react-router-dom";
+import { PlusCircleOutlined, TeamOutlined } from '@ant-design/icons';
 import api from '../../services/api';
 import StyledContainer from '../../components/Container/StyledContainer';
+import Space from '../../components/Space/Space';
+import Content from '../../components/Content/Content';
+import VehicleForm from './carsForm';
 
+const { Search } = Input;
 
-const vehicles = () => {
+const Vehicles = () => {
   const [vehicles, setVehicles] = useState([]);
+  const [isVehicleModalVisible, setIsVehicleModalVisible] = useState(false);
+  const [isClientModalVisible, setIsClientModalVisible] = useState(false);
+  const [filteredVehicles, setFilteredVehicles] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const [selectedClient, setSelectedClient] = useState(null);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const getVehicles = async () => {
-    try {
+      try {
         const response = await api.get("/api/Veiculo");
-        console.log ("Dados recebidos:", response.data);
-        const data = response.data.dados.map(vehicles => ({
-          ...vehicles,
-          key: vehicles.id,
+        console.log("Dados recebidos:", response.data);
+        const data = response.data.dados.map(vehicle => ({
+          ...vehicle,
+          key: vehicle.id,
         }));
         setVehicles(data);
-      
-    } catch (error) {
-      console.error('Erro ao buscar veículo:', error);
-        setLoading(false);
-    }
+        setFilteredVehicles(data);
+      } catch (error) {
+        console.error('Erro ao buscar veículo:', error);
+      }
     };
 
-    getVehicles();
+    getVehicles();  
   }, []);
+
+  const handleSearch = (value) => {
+    setSearchText(value);
+    const filteredData = vehicles.filter(vehicle => 
+      vehicle.placa.toLowerCase().includes(value.toLowerCase()) ||
+      vehicle.marca.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredVehicles(filteredData);
+  };
 
   const columns = [
     {
@@ -60,8 +74,6 @@ const vehicles = () => {
       title: 'Cor',
       dataIndex: 'cor',
       key: 'cor',
-    
-     
     },
     {
       title: 'Ano',
@@ -71,25 +83,107 @@ const vehicles = () => {
     {
       title: 'Ações',
       key: 'action',
-     
+      render: (_, record) => (
+        <>
+          <Button onClick={() => handleEdit(record.id)} style={{ marginRight: 8 }}>Editar</Button>
+          <Button 
+            icon={<TeamOutlined />} 
+            onClick={() => handleViewClients(record.id)}
+          >
+            Clientes
+          </Button>
+        </>
+      ),
     },
   ];
-  
+
+  const handleEdit = (id) => {
+    navigate(`/cars/form/${id}`);
+  };
+
+  const showVehicleModal = () => {
+    setIsVehicleModalVisible(true);
+  };
+
+  const handleCancelVehicleModal = () => {
+    setIsVehicleModalVisible(false);
+  };
+
+  const handleViewClients = async (vehicleId) => {
+    try {
+     
+      const response = await api.get(`api/Cliente/by-veiculo/${vehicleId}`);
+      console.log('Dados dos clientes:', response.data);
+      
+     
+      const clientData = response.data.dados;
+      setSelectedClient(clientData);
+
+      setIsClientModalVisible(true);
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error);
+    }
+  };
+
+  const handleCancelClientModal = () => {
+    setIsClientModalVisible(false);
+    setSelectedClient(null);
+  };
 
   return (
     <Sidebar>
       <Content>
-      <Flex gap="small" wrap="wrap">
-        <Button type="primary" icon = {<PlusCircleOutlined />} onClick={() => navigate("/customers/form")}>Adicionar Veículo</Button>
-        </Flex> 
+        <Row justify="space-between" align="middle" wrap="wrap">
+          <Col>
+            <Button 
+              type="primary" 
+              icon={<PlusCircleOutlined />} 
+              onClick={showVehicleModal}
+            >
+              Adicionar Veículo
+            </Button>
+          </Col>
+          
+          <Col>
+            <Search
+              placeholder="Buscar por placa ou marca"
+              value={searchText}
+              onChange={e => handleSearch(e.target.value)}
+              style={{ width: 300, marginRight: 20 }} 
+            />
+          </Col>
+        </Row>
         <StyledContainer>
-        <Space size="20px" />        
-        <h3>Veículos</h3>
-        <Table columns={columns} dataSource={vehicles} />
+          
+          <h3>Veículos</h3>
+          <Table columns={columns} dataSource={filteredVehicles} />
         </StyledContainer>
-      </Content>  
+        <Modal 
+          title="Novo Veículo" 
+          visible={isVehicleModalVisible} 
+          onCancel={handleCancelVehicleModal} 
+          footer={null} // remove os botões padrão do modal
+        >
+          <VehicleForm onClose={handleCancelVehicleModal} />
+        </Modal>
+        <Modal 
+          title="Informações do Cliente" 
+          visible={isClientModalVisible} 
+          onCancel={handleCancelClientModal} 
+          footer={null}
+        >
+          {selectedClient && (
+            <div>
+              <p><strong>Nome:</strong> {selectedClient.nome}</p>
+              <p><strong>CPF:</strong> {selectedClient.documento}</p>
+              <p><strong>Email:</strong> {selectedClient.email}</p>
+              <p><strong>Telefone:</strong> {selectedClient.contato}</p>
+            </div>
+          )}
+        </Modal>
+      </Content>
     </Sidebar>
-  )
+  );
 }
 
-export default vehicles
+export default Vehicles;
