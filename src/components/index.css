@@ -1,3 +1,10 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
 .sidebar {
   color: #fff;
   /* Garantir que o Sider ocupe toda a altura da página */
@@ -43,3 +50,6 @@
 .toggle {
   margin-left: 15px;
 }
+
+
+

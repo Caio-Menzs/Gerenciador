@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react'  
 import {  Sidebar } from '../../components'
-import { Table,  Button, Flex } from 'antd';
-import Space from '../../components/Space/Space';
+import { Table,  Button, Flex, Modal } from 'antd';
+
 import Content from '../../components/Content/Content';
 import { useNavigate } from "react-router-dom"
 import {PlusCircleOutlined} from '@ant-design/icons'
 import StyledContainer from '../../components/Container/StyledContainer';
 import api from '../../services/api';
+import ProductForm from "../products/productsForm";
 
 
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const getProducts = async () => {
@@ -65,6 +70,18 @@ const Products = () => {
      
     },
   ];
+
+  const handleEdit = (id) => {
+    navigate(`/products/form/${id}`);
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
  
  
  
@@ -72,16 +89,29 @@ const Products = () => {
     <Sidebar>
       <Content>
       <Flex gap="small" wrap="wrap">
-        <Button type="primary" icon = {<PlusCircleOutlined />} onClick={() => navigate("/customers/form")}>Adicionar Produto</Button>
-        </Flex> 
+        <Button type="primary" icon = {<PlusCircleOutlined />} onClick={showModal}>
+          Adicionar Produto
+        </Button>
+      </Flex> 
+
         <StyledContainer>
-        <Space size="20px" />        
+
+         
         <h3>Produtos</h3>
         <Table 
           columns={columns} 
           dataSource={products}
+          rowKey="id"
         />
         </StyledContainer>
+        <Modal 
+          title ="Novo Produto"
+          visible={isModalVisible}
+          onCancel={handleCancel}
+          footer ={null}
+        >
+       <ProductForm onClose={{handleCancel}}/> 
+       </Modal>
       </Content>  
     </Sidebar>
   )

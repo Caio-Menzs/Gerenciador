@@ -5,7 +5,7 @@ import Space from '../../components/Space/Space';
 import Content from '../../components/Content/Content';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import api from '../../services/api';
-import CustomerForm from './customerForm'; // Importe o formulário de cliente
+import CustomerForm from './customerForm'; 
 import StyledContainer from '../../components/Container/StyledContainer';
 
 const Customer = () => {
