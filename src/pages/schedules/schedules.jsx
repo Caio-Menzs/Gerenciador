@@ -52,6 +52,7 @@ const Schedules = () => {
         backgroundColor: 'black', // Define a cor cinza para os eventos
         borderColor: 'black',
         color: 'white', // Cor do texto dentro do evento
+        opacity: 0.6
       },
     };
   };

@@ -89,10 +89,8 @@ const Products = () => {
     <Sidebar>
       <Content>
       <Flex gap="small" wrap="wrap">
-        <Button type="primary" icon = {<PlusCircleOutlined />} onClick={showModal}>
-          Adicionar Produto
-        </Button>
-      </Flex> 
+          <CustomButton icon={<PlusCircleOutlined />} label = "Produto"  onClick={showModal} />
+        </Flex>
 
         <StyledContainer>
 

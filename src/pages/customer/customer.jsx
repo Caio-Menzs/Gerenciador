@@ -7,6 +7,7 @@ import { PlusCircleOutlined } from '@ant-design/icons';
 import api from '../../services/api';
 import CustomerForm from './customerForm'; 
 import StyledContainer from '../../components/Container/StyledContainer';
+import CustomButton from '../../components/CustomButton/CustomButton';
 
 const Customer = () => {
   const [customers, setCustomers] = useState([]);
@@ -87,13 +88,9 @@ const Customer = () => {
     <Sidebar>
       <Content>
         <Flex gap="small" wrap="wrap">
-          <Button type="primary" icon={<PlusCircleOutlined />} onClick={showModal}>
-            Adicionar Cliente
-          </Button>
+          <CustomButton icon={<PlusCircleOutlined />} label = "Cliente"  onClick={showModal} />
         </Flex>
-     
-        <StyledContainer>
-          
+      <StyledContainer>
         <h3>Clientes</h3>
           <Table 
             columns={columns} 

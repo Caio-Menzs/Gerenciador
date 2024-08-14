@@ -1,26 +1,23 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
-body {
-  font-family: 'Roboto', sans-serif;
-}
 
 .sidebar {
-  color: #fff;
-  /* Garantir que o Sider ocupe toda a altura da página */
+  color: #fff; 
   height: 100vh;
+  
 }
+
 
 .logo {
   display: flex;
   align-items: center;
   justify-content: center;
   color: #070707;
-  padding: 10px; /* Remover padding */
-  margin: 0; /* Remover margem */
+  padding: 10px; 
+  margin: 0; 
 }
 
-.logo-icon{
+
+.logo-icon {
   width: 40px;
   height: 40px;
   display: flex;
@@ -32,9 +29,8 @@ body {
 }
 
 
-/* Ajustar a altura do menu */
 .menu-bar {
-  height: calc(100vh - 56px); /* Ajuste para considerar o espaço da logo */
+  height: calc(100vh - 56px); 
   margin-top: 0;
   display: flex;
   flex-direction: column;
@@ -43,7 +39,7 @@ body {
   position: relative;
 }
 
-/* Certifique-se de que o botão de alternância esteja posicionado corretamente */
+
 .toggle-theme-btn {
   position: absolute;
   bottom: 30px;
@@ -54,9 +50,19 @@ body {
   font-size: 1rem;
 }
 
+
 .toggle {
   margin-left: 15px;
 }
 
 
+.sidebar .ant-menu-item-selected {
+  background-color: lightgray !important; 
+  color: rgb(0, 0, 0) !important; 
+  font-weight: bold !important; 
+}
 
+
+.sidebar .ant-menu-item:hover {
+  background-color: lightgray; 
+}

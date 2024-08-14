@@ -1,12 +1,14 @@
-import PropTypes from "prop-types"; // Importe PropTypes
+import PropTypes from "prop-types";
 import { Menu } from "antd";
 import { HomeOutlined, TeamOutlined, ShoppingCartOutlined, CarOutlined, ToolOutlined, CodeSandboxOutlined, BarChartOutlined, CalendarOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSidebar } from '../../context/SidebarContext'
 
 const MenuList = ({ darkTheme }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { collapsed } = useSidebar();
   const [selectedKey, setSelectedKey] = useState("");
 
   useEffect(() => {
@@ -34,7 +36,7 @@ const MenuList = ({ darkTheme }) => {
       theme={darkTheme ? 'dark' : 'light'}
       mode="inline"
       className="menu-bar"
-      selectedKeys={[selectedKey]} // Define o item selecionado
+      selectedKeys={[selectedKey]}
     >
       <Menu.Item key="home" icon={<HomeOutlined />} onClick={() => handleClick("home", "/")}>
         Página Inicial
