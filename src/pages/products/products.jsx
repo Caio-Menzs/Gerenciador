@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'  
-import {  Sidebar } from '../../components'
+import  Sidebar  from '../../components/Sidebar/Sidebar';
 import { Table,  Button, Flex, Modal } from 'antd';
 
 import Content from '../../components/Content/Content';

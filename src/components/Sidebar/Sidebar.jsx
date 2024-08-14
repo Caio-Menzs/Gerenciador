@@ -1,9 +1,9 @@
 import { Button, Layout, theme } from 'antd';
-import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
-import MenuList from '../components/MenuList/MenuList';
+import { MenuUnfoldOutlined, MenuFoldOutlined, FireFilled } from '@ant-design/icons';
+import MenuList from '../MenuList/MenuList';
 import { useState } from 'react';
 import './index.css';
-import logo from '../images/logoessa.png'; // Importe a logo
+import logo from '../../images/logoessa.png'
 
 const Sidebar = ({ children }) => {
   const { Header, Sider, Content } = Layout;
@@ -20,13 +20,15 @@ const Sidebar = ({ children }) => {
           collapsed={collapsed} 
           collapsible 
           trigger={null}
-          theme={'dark'} 
+          theme='light' // Altere para 'light' para tema claro
           className='sidebar'
         >
-          <div className="logo" style={{ padding: '16px', textAlign: 'center' }}>
-            <img src={logo} alt="Logo" style={{ width: '180%', height: 'auto' }} />
+          <div className="logo" >
+            <div className="logo-icon">
+          <FireFilled/>
+             </div>
           </div>
-          <MenuList darkTheme/>
+          <MenuList darkTheme={false}/> {/* Passar false para não usar tema escuro */}
         </Sider>
         <Layout>
           <Header style={{ padding: 0, background: colorBgContainer }}>

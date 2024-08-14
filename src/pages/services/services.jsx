@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Sidebar } from '../../components';
+import  Sidebar  from '../../components/Sidebar/Sidebar';
 import { Table, Button, Flex } from 'antd';
 import Space from '../../components/Space/Space';
 import Content from '../../components/Content/Content';
@@ -76,9 +76,10 @@ const Services = () => {
             Adicionar Serviço
           </Button>
         </Flex>
-        <Space size="20px" />        
-        <h3>Serviços</h3>
+        
+        
         <StyledContainer>
+        <h3>Serviços</h3>
         <Table 
           columns={columns} 
           dataSource={services} 

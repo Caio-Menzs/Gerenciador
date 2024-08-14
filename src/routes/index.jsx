@@ -8,6 +8,7 @@ import Services from "../pages/services/services";
 import Vehicles from "../pages/cars/cars";
 import VehicleForm from "../pages/cars/carsForm";
 import ProductForm from "../pages/products/productsForm";
+import Schedules from "../pages/schedules/schedules";
 
 
 const RoutesComponent = () => {
@@ -22,6 +23,7 @@ const RoutesComponent = () => {
             <Route path="/services" element={<Services />} />
             <Route path="/cars" element={<Vehicles />} />
             <Route path="/cars/form" element={<VehicleForm/>}/>
+            <Route path="/schedules" element={<Schedules/>}/>
            
         </Routes>
     );

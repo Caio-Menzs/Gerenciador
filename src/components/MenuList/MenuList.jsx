@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"; // Importe PropTypes
 import { Menu } from "antd";
-import { HomeOutlined, TeamOutlined, ShoppingCartOutlined, CarOutlined, ToolOutlined, CodeSandboxOutlined, BarChartOutlined } from "@ant-design/icons";
+import { HomeOutlined, TeamOutlined, ShoppingCartOutlined, CarOutlined, ToolOutlined, CodeSandboxOutlined, BarChartOutlined, CalendarOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -13,6 +13,7 @@ const MenuList = ({ darkTheme }) => {
     // Atualiza o estado do item selecionado com base na URL atual
     const pathToKey = {
       "/": "home",
+      "/schedules": "schedules",
       "/customers": "clients",
       "/cars": "veiculos",
       "/products": "products",
@@ -37,6 +38,9 @@ const MenuList = ({ darkTheme }) => {
     >
       <Menu.Item key="home" icon={<HomeOutlined />} onClick={() => handleClick("home", "/")}>
         Página Inicial
+      </Menu.Item>
+      <Menu.Item key="schedules" icon={<CalendarOutlined />} onClick={() => handleClick("schedules", "/schedules")}>
+        Agendamentos
       </Menu.Item>
       <Menu.Item key="clients" icon={<TeamOutlined />} onClick={() => handleClick("clients", "/customers")}>
         Clientes

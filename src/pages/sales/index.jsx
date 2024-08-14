@@ -1,5 +1,5 @@
 import React from 'react'
-import Sidebar from '../../components/Sidebar'
+import  Sidebar  from '../../components/Sidebar/Sidebar';
 import { Space, Table, Tag, Button, Flex } from 'antd';
 import {PlusCircleOutlined} from '@ant-design/icons'
 import Content from '../../components/Content/Content';

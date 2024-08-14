@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sidebar } from '../../components';
+import  Sidebar  from '../../components/Sidebar/Sidebar';
 import { Table, Button, Input, Row, Col, Modal } from 'antd';
 import { useNavigate } from "react-router-dom";
 import { PlusCircleOutlined, TeamOutlined } from '@ant-design/icons';
