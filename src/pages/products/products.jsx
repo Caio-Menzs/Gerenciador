@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'  
 import  Sidebar  from '../../components/Sidebar/Sidebar';
 import { Table,  Button, Flex, Modal } from 'antd';
-
+import CustomButton from '../../components/CustomButton/CustomButton';
 import Content from '../../components/Content/Content';
 import { useNavigate } from "react-router-dom"
 import {PlusCircleOutlined} from '@ant-design/icons'
@@ -89,8 +89,8 @@ const Products = () => {
     <Sidebar>
       <Content>
       <Flex gap="small" wrap="wrap">
-          <CustomButton icon={<PlusCircleOutlined />} label = "Produto"  onClick={showModal} />
-        </Flex>
+      <CustomButton icon={<PlusCircleOutlined />} label = "Produto"  onClick={showModal} />
+      </Flex> 
 
         <StyledContainer>
 

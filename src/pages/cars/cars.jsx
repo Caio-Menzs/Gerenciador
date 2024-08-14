@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import  Sidebar  from '../../components/Sidebar/Sidebar';
+import Sidebar from '../../components/Sidebar/Sidebar';
 import { Table, Button, Input, Row, Col, Modal } from 'antd';
 import { useNavigate } from "react-router-dom";
 import { PlusCircleOutlined, TeamOutlined } from '@ant-design/icons';
 import api from '../../services/api';
 import StyledContainer from '../../components/Container/StyledContainer';
-import Space from '../../components/Space/Space';
 import Content from '../../components/Content/Content';
 import VehicleForm from './carsForm';
+import CustomButton from '../../components/CustomButton/CustomButton';
 
 const { Search } = Input;
 
@@ -32,7 +32,7 @@ const Vehicles = () => {
         setVehicles(data);
         setFilteredVehicles(data);
       } catch (error) {
-        console.error('Erro ao buscar veículo:', error);
+        console.error('Erro ao buscar veículos:', error);
       }
     };
 
@@ -111,17 +111,18 @@ const Vehicles = () => {
 
   const handleViewClients = async (vehicleId) => {
     try {
-     
       const response = await api.get(`api/Cliente/by-veiculo/${vehicleId}`);
       console.log('Dados dos clientes:', response.data);
-      
-     
       const clientData = response.data.dados;
-      setSelectedClient(clientData);
-
+      if (Array.isArray(clientData) && clientData.length > 0) {
+        setSelectedClient(clientData);
+      } else {
+        setSelectedClient(null);
+      }
       setIsClientModalVisible(true);
     } catch (error) {
       console.error('Erro ao buscar clientes:', error);
+      setSelectedClient(null); // Garantir que selectedClient seja nulo em caso de erro
     }
   };
 
@@ -135,13 +136,7 @@ const Vehicles = () => {
       <Content>
         <Row justify="space-between" align="middle" wrap="wrap">
           <Col>
-            <Button 
-              type="primary" 
-              icon={<PlusCircleOutlined />} 
-              onClick={showVehicleModal}
-            >
-              Adicionar Veículo
-            </Button>
+            <CustomButton icon={<PlusCircleOutlined />} label="Veículo" onClick={showVehicleModal} />
           </Col>
           
           <Col>
@@ -154,7 +149,6 @@ const Vehicles = () => {
           </Col>
         </Row>
         <StyledContainer>
-          
           <h3>Veículos</h3>
           <Table columns={columns} dataSource={filteredVehicles} />
         </StyledContainer>
@@ -162,7 +156,7 @@ const Vehicles = () => {
           title="Novo Veículo" 
           visible={isVehicleModalVisible} 
           onCancel={handleCancelVehicleModal} 
-          footer={null} // remove os botões padrão do modal
+          footer={null}
         >
           <VehicleForm onClose={handleCancelVehicleModal} />
         </Modal>
@@ -172,13 +166,27 @@ const Vehicles = () => {
           onCancel={handleCancelClientModal} 
           footer={null}
         >
-          {selectedClient && (
-            <div>
-              <p><strong>Nome:</strong> {selectedClient.nome}</p>
-              <p><strong>CPF:</strong> {selectedClient.documento}</p>
-              <p><strong>Email:</strong> {selectedClient.email}</p>
-              <p><strong>Telefone:</strong> {selectedClient.contato}</p>
-            </div>
+          {selectedClient ? (
+            Array.isArray(selectedClient) ? (
+              selectedClient.map(client => (
+                <div key={client.id}>
+                  <p><strong>Nome:</strong> {client.nome}</p>
+                  <p><strong>CPF:</strong> {client.documento}</p>
+                  <p><strong>Email:</strong> {client.email}</p>
+                  <p><strong>Telefone:</strong> {client.contato}</p>
+                  <hr />
+                </div>
+              ))
+            ) : (
+              <div>
+                <p><strong>Nome:</strong> {selectedClient.nome}</p>
+                <p><strong>CPF:</strong> {selectedClient.documento}</p>
+                <p><strong>Email:</strong> {selectedClient.email}</p>
+                <p><strong>Telefone:</strong> {selectedClient.contato}</p>
+              </div>
+            )
+          ) : (
+            <p>Nenhum cliente encontrado.</p>
           )}
         </Modal>
       </Content>

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { PlusCircleOutlined } from '@ant-design/icons';
 import api from '../../services/api';
 import StyledContainer from '../../components/Container/StyledContainer';
+import CustomButton from '../../components/CustomButton/CustomButton';
 
 const Services = () => {
   const navigate = useNavigate();
@@ -72,9 +73,7 @@ const Services = () => {
     <Sidebar>
       <Content>
         <Flex gap="small" wrap="wrap">
-          <Button type="primary" icon={<PlusCircleOutlined />} onClick={() => navigate("/services/form")}>
-            Adicionar Serviço
-          </Button>
+          <CustomButton icon={<PlusCircleOutlined />} label = "Produto"  />
         </Flex>
         
         
