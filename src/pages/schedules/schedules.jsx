@@ -6,6 +6,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Content from '../../components/Content/Content';
+import CustomButton from '../../components/CustomButton/CustomButton';
 
 import { Button } from 'antd';
 import Space from '../../components/Space/Space';
@@ -44,11 +45,22 @@ const Schedules = () => {
    
   ];
 
+   // Função para personalizar a cor dos eventos
+   const eventPropGetter = () => {
+    return {
+      style: {
+        backgroundColor: 'black', // Define a cor cinza para os eventos
+        borderColor: 'black',
+        color: 'white', // Cor do texto dentro do evento
+      },
+    };
+  };
+
   return (
     <Sidebar> 
       <Content>
       <div style={{ marginBottom: '20px' }}>
-          <Button type="primary" icon={<PlusCircleOutlined />}>Adicionar Evento</Button>
+          <CustomButton icon={<PlusCircleOutlined />} label = "agendamento"  />
         </div>
         <StyledContainer>
         
@@ -63,6 +75,7 @@ const Schedules = () => {
           style={{ height: 500 }}
           min={new Date(moment().set({ hour: 8, minute: 0 }))}
           max={new Date(moment().set({ hour: 18, minute: 0 }))}
+          eventPropGetter={eventPropGetter}
         />
         </StyledContainer>
       </Content>

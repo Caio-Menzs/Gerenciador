@@ -6,8 +6,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Content from '../../components/Content/Content';
+import CustomButton from '../../components/CustomButton/CustomButton';
 
-import { Button } from 'antd';
 
 
 const localizer = momentLocalizer(moment);
@@ -18,7 +18,7 @@ const Index = () => {
   return (
     <Sidebar> 
       <Content>
-        
+         <CustomButton label="Cliente" />
       </Content>
     </Sidebar>
   );
