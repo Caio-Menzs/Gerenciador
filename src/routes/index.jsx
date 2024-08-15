@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import Login from '../pages/login/index';
 import Home from "../pages/home";
 import Sales from "../pages/sales";
 import Products from "../pages/products/products";
@@ -14,6 +15,7 @@ import Schedules from "../pages/schedules/schedules";
 const RoutesComponent = () => {
     return (
         <Routes>
+            <Route path="/login" element={<Login />} />
             <Route path="/" element={<Home />} />
             <Route path="/sales" element={<Sales />} />
             <Route path="/products" element={<Products />} />
