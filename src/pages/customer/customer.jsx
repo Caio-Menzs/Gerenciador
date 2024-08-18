@@ -103,7 +103,7 @@ const Customer = () => {
           title="Novo Cliente" 
           visible={isModalVisible} 
           onCancel={handleCancel} 
-          footer={null} // remove os botões padrão do modal
+          footer={null} 
         >
           <CustomerForm onClose={handleCancel} />
         </Modal>

@@ -64,7 +64,7 @@ const ProductForm = ({ onClose }) => {
             <Item
               label="Código"
               name="code"
-              rules={[{ required: true, message: 'Por favor, insira o código do produto!' }]}
+              rules={[{ required: false, message: 'Por favor, insira o código do produto!' }]}
             >
               <Input />
             </Item>

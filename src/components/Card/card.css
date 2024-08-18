@@ -1,0 +1,12 @@
+.trend {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+  }
+  
+  .trend span {
+    margin-left: 8px;
+    font-size: 12px;
+    color: #666;
+  }
+  

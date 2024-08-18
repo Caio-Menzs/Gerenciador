@@ -161,7 +161,7 @@ const VehicleForm = ({ onClose }) => {
             <Item
               label="Número do Chassi"
               name="numeroChassi"
-              rules={[{ required: true, message: 'Por favor, insira o número do chassi!' }]}
+              rules={[{ required: false, message: 'Por favor, insira o número do chassi!' }]}
             >
               <Input />
             </Item>
@@ -173,7 +173,7 @@ const VehicleForm = ({ onClose }) => {
             <Item
               label="Número de Patrimônio"
               name="numeroPatrimonio"
-              rules={[{ required: true, message: 'Por favor, insira o número de patrimônio!' }]}
+              rules={[{ required: false, message: 'Por favor, insira o número de patrimônio!' }]}
             >
               <Input />
             </Item>

@@ -109,20 +109,33 @@ const Vehicles = () => {
     setIsVehicleModalVisible(false);
   };
 
-  const handleViewClients = async (vehicleId) => {
+  const handleViewClients = async (id) => {
+    // Encontre o veículo correspondente para obter o idCliente
+    const selectedVehicle = vehicles.find(vehicle => vehicle.id === id);
+
+    if (!selectedVehicle) {
+      console.error('Veículo não encontrado');
+      return;
+    }
+
+    const clientId = selectedVehicle.idCliente;
+
     try {
-      const response = await api.get(`api/Cliente/by-veiculo/${vehicleId}`);
+      const response = await api.get(`api/Cliente/${clientId}`);
       console.log('Dados dos clientes:', response.data);
       const clientData = response.data.dados;
-      if (Array.isArray(clientData) && clientData.length > 0) {
-        setSelectedClient(clientData);
+
+      if (clientData) {
+        setSelectedClient(Array.isArray(clientData) ? clientData : [clientData]);
       } else {
-        setSelectedClient(null);
+        setSelectedClient([]);
       }
+
       setIsClientModalVisible(true);
     } catch (error) {
       console.error('Erro ao buscar clientes:', error);
-      setSelectedClient(null); // Garantir que selectedClient seja nulo em caso de erro
+      setSelectedClient([]);
+      setIsClientModalVisible(true);
     }
   };
 
@@ -166,25 +179,17 @@ const Vehicles = () => {
           onCancel={handleCancelClientModal} 
           footer={null}
         >
-          {selectedClient ? (
-            Array.isArray(selectedClient) ? (
-              selectedClient.map(client => (
-                <div key={client.id}>
-                  <p><strong>Nome:</strong> {client.nome}</p>
-                  <p><strong>CPF:</strong> {client.documento}</p>
-                  <p><strong>Email:</strong> {client.email}</p>
-                  <p><strong>Telefone:</strong> {client.contato}</p>
-                  <hr />
-                </div>
-              ))
-            ) : (
-              <div>
-                <p><strong>Nome:</strong> {selectedClient.nome}</p>
-                <p><strong>CPF:</strong> {selectedClient.documento}</p>
-                <p><strong>Email:</strong> {selectedClient.email}</p>
-                <p><strong>Telefone:</strong> {selectedClient.contato}</p>
+          
+          {selectedClient && selectedClient.length > 0 ? (
+            selectedClient.map(client => (
+              <div key={client.id}>
+                <p><strong>Nome:</strong> {client.nome}</p>
+                <p><strong>CPF:</strong> {client.documento}</p>
+                <p><strong>Email:</strong> {client.email}</p>
+                <p><strong>Telefone:</strong> {client.contato}</p>
+                <hr />
               </div>
-            )
+            ))
           ) : (
             <p>Nenhum cliente encontrado.</p>
           )}

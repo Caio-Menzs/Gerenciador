@@ -1,8 +1,9 @@
 import { Button, Layout, theme } from 'antd';
-import { MenuUnfoldOutlined, MenuFoldOutlined, FireFilled } from '@ant-design/icons';
+import { MenuUnfoldOutlined, MenuFoldOutlined, FireFilled, UserOutlined } from '@ant-design/icons';
 import MenuList from '../MenuList/MenuList';
-import { useSidebar } from '../../context/SidebarContext'
+import { useSidebar } from '../../context/SidebarContext';
 import './index.css';
+import { Avatar } from 'antd';
 
 const Sidebar = ({ children }) => {
   const { Header, Sider, Content } = Layout;
@@ -26,16 +27,17 @@ const Sidebar = ({ children }) => {
             <FireFilled />
           </div>
         </div>
-        <MenuList darkTheme={false} />
-      </Sider>
+        <MenuList darkTheme={false} />  
+      </Sider>    
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header style={{ padding: '0 16px', background: colorBgContainer, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Button 
             type="text"
             className='toggle'
             onClick={() => setCollapsed(!collapsed)}
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           />
+          <Avatar icon={<UserOutlined />} />
         </Header>
         <Content>
           {children}
