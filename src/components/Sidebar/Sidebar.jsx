@@ -1,9 +1,9 @@
-import { Button, Layout, theme } from 'antd';
-import { MenuUnfoldOutlined, MenuFoldOutlined, FireFilled, UserOutlined } from '@ant-design/icons';
+import { Button, Layout, theme, Avatar } from 'antd';
+import { MenuUnfoldOutlined, MenuFoldOutlined, UserOutlined } from '@ant-design/icons';
 import MenuList from '../MenuList/MenuList';
 import { useSidebar } from '../../context/SidebarContext';
 import './index.css';
-import { Avatar } from 'antd';
+import Logo from '../../images/logoessa.png';
 
 const Sidebar = ({ children }) => {
   const { Header, Sider, Content } = Layout;
@@ -19,15 +19,15 @@ const Sidebar = ({ children }) => {
         collapsed={collapsed} 
         collapsible 
         trigger={null}
-        theme='light'
+        theme='dark'
         className='sidebar'
       >
         <div className="logo">
           <div className="logo-icon">
-            <FireFilled />
+            <img src={Logo} alt="Logo" title='Logo' />
           </div>
         </div>
-        <MenuList darkTheme={false} />  
+        <MenuList darkTheme={true} />  
       </Sider>    
       <Layout>
         <Header style={{ padding: '0 16px', background: colorBgContainer, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

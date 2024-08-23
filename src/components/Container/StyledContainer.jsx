@@ -1,6 +1,6 @@
 
 import React from 'react';
-import './StyledContainer.css'; // Importe o arquivo de estilos
+import './StyledContainer.css'; 
 
 const StyledContainer = ({ children }) => {
   return (
