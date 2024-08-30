@@ -91,7 +91,7 @@ const Customer = () => {
           <CustomButton icon={<PlusCircleOutlined />} label = "Cliente"  onClick={showModal} />
         </Flex>
       <StyledContainer>
-        <h3>Clientes</h3>
+        <h3 style={{ marginTop: '20px' }}>Clientes</h3>
           <Table 
             columns={columns} 
             dataSource={customers} 

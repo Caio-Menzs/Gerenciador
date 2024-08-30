@@ -12,7 +12,6 @@ const MenuList = ({ darkTheme }) => {
   const [selectedKey, setSelectedKey] = useState("");
 
   useEffect(() => {
-    // Atualiza o estado do item selecionado com base na URL atual
     const pathToKey = {
       "/": "home",
       "/schedules": "schedules",
@@ -21,7 +20,8 @@ const MenuList = ({ darkTheme }) => {
       "/products": "products",
       "/services": "services",
       "/sales": "sales",
-      "/reports": "reports"
+      "/reports": "reports",
+      "/orders": "orders"
     };
     setSelectedKey(pathToKey[location.pathname] || "home");
   }, [location.pathname]);
@@ -43,6 +43,9 @@ const MenuList = ({ darkTheme }) => {
       </Menu.Item>
       <Menu.Item key="schedules" icon={<CalendarOutlined />} onClick={() => handleClick("schedules", "/schedules")}>
         Agendamentos
+      </Menu.Item>
+      <Menu.Item key="orders" icon={<CalendarOutlined />} onClick={() => handleClick("orders", "/orders")}>
+        Ordens de Serviços
       </Menu.Item>
       <Menu.Item key="clients" icon={<TeamOutlined />} onClick={() => handleClick("clients", "/customers")}>
         Clientes

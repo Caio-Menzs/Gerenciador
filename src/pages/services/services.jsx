@@ -37,23 +37,23 @@ const Services = () => {
   const columns = [
     {
       title: 'N°',
-      dataIndex: 'id', // Ajuste para corresponder ao nome do campo correto nos dados
+      dataIndex: 'id', 
       key: 'id',
       render: (text) => <span>{text}</span>,
     },
     {
       title: 'Nome',
-      dataIndex: 'nome', // Ajuste para corresponder ao nome do campo correto nos dados
+      dataIndex: 'nome', 
       key: 'nome',
     },
     {
       title: 'Preço',
-      dataIndex: 'preco', // Ajuste para corresponder ao nome do campo correto nos dados
+      dataIndex: 'preco', 
       key: 'preco',
     },
     {
       title: 'Descrição',
-      dataIndex: 'descricao', // Ajuste para corresponder ao nome do campo correto nos dados
+      dataIndex: 'descricao', 
       key: 'descricao',
     },
     {
@@ -78,7 +78,7 @@ const Services = () => {
         
         
         <StyledContainer>
-        <h3>Serviços</h3>
+        <h3 style={{ marginTop: '20px' }}>Serviços</h3>
         <Table 
           columns={columns} 
           dataSource={services} 
