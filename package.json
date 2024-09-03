@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
+    "@nivo/bar": "^0.87.0",
+    "@nivo/pie": "^0.87.0",
     "@tremor/react": "^3.18.0",
     "antd": "^5.16.0",
     "axios": "^1.7.2",

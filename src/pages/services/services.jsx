@@ -4,7 +4,7 @@ import { Table, Button, Flex } from 'antd';
 import Space from '../../components/Space/Space';
 import Content from '../../components/Content/Content';
 import { useNavigate } from "react-router-dom";
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, FormOutlined } from '@ant-design/icons';
 import api from '../../services/api';
 import StyledContainer from '../../components/Container/StyledContainer';
 import CustomButton from '../../components/CustomButton/CustomButton';
@@ -59,8 +59,10 @@ const Services = () => {
     {
       title: 'Ações',
       key: 'action',
-      render: (text, record) => (
-        <Button type="link" onClick={() => handleEdit(record.id)}>Editar</Button>
+      render: (_, record) => (
+        <>
+          <Button icon={<FormOutlined />} onClick={() => handleEdit(record.id)} style={{ marginRight: 8 }}>Editar</Button>
+        </>
       ),
     },
   ];

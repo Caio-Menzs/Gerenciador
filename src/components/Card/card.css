@@ -1,12 +1,29 @@
+.dashboard-card {
+  position: relative;
+  border-left: 4px solid #3f8600; /* Substitua a cor conforme necessário */
+  border-radius: 12px; /* Mantém o estilo arredondado */
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card .ant-card-head {
+  font-size: 14px;
+  font-weight: bold;
+  padding: 16px;
+}
+
+.dashboard-card .ant-card-body {
+  padding: 16px;
+}
+
 .trend {
-    display: flex;
-    align-items: center;
-    margin-top: 8px;
-  }
-  
-  .trend span {
-    margin-left: 8px;
-    font-size: 12px;
-    color: #666;
-  }
-  
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.trend span {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #555;
+}

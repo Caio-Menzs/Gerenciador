@@ -3,7 +3,7 @@ import  Sidebar  from '../../components/Sidebar/Sidebar';
 import { Table, Button, Flex, Modal } from 'antd';
 
 import Content from '../../components/Content/Content';
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, FormOutlined  } from '@ant-design/icons';
 import api from '../../services/api';
 import CustomerForm from './customerForm'; 
 import StyledContainer from '../../components/Container/StyledContainer';
@@ -67,7 +67,9 @@ const Customer = () => {
       title: 'Ações',
       key: 'action',
       render: (text, record) => (
-        <Button type="link" onClick={() => handleEdit(record.id)}>Editar</Button>
+        <Button 
+        icon={<FormOutlined />}
+        onClick={() => handleEdit(record.id)} style={{ marginRight: 8 }}>Editar</Button>
       ),
     },
   ];

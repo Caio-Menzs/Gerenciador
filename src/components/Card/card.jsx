@@ -1,15 +1,16 @@
 import React from 'react';
 import { Card, Statistic, Col } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
-import './card.css'; 
+import './card.css';
 
-const DashboardCard = ({ title, value, description, trend, icon }) => {
+const DashboardCard = ({ title, value, description, trend, icon, color }) => {
   return (
     <Col span={6} style={{ marginBottom: '16px' }}>
       <Card
         title={title}
         bordered={false}
-        style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' }}
+        className="dashboard-card"
+        style={{ borderLeft: `4px solid ${color}`, borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' }}
         headStyle={{ fontSize: '14px', fontWeight: 'bold', padding: '16px' }}
         bodyStyle={{ padding: '16px' }}
       >

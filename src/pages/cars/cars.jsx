@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import { Table, Button, Input, Row, Col, Modal } from 'antd';
 import { useNavigate } from "react-router-dom";
-import { PlusCircleOutlined, TeamOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, TeamOutlined, FormOutlined } from '@ant-design/icons';
 import api from '../../services/api';
 import StyledContainer from '../../components/Container/StyledContainer';
 import Content from '../../components/Content/Content';
@@ -85,7 +85,7 @@ const Vehicles = () => {
       key: 'action',
       render: (_, record) => (
         <>
-          <Button onClick={() => handleEdit(record.id)} style={{ marginRight: 8 }}>Editar</Button>
+          <Button icon={<FormOutlined />} onClick={() => handleEdit(record.id)} style={{ marginRight: 8 }}>Editar</Button>
           <Button 
             icon={<TeamOutlined />} 
             onClick={() => handleViewClients(record.id)}

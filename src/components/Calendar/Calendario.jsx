@@ -1,92 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
-import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
-import 'react-big-calendar/lib/css/react-big-calendar.css'; // Importação principal
-import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'; // Importação do addon
-import eventosPadrao from '../Events/events.jsx';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+import api from '../../services/api'; 
 
-const DragAndDropCalendar = withDragAndDrop(Calendar);
 const localizer = momentLocalizer(moment);
 
 function Calendario() {
-    const [eventos, setEventos] = useState(eventosPadrao);
-    const [eventoSelecionado, SeteventoSelecionado] = useState(null);
-    const [eventosFiltrados, setEventosFiltrados] = useState(eventosPadrao);
+    const [eventos, setEventos] = useState([]);
+    const [eventoSelecionado, setEventoSelecionado] = useState(null);
 
-    const eventStyle = (event) => ({
-        style: {
-            backgroundColor: event.color,
-        },
-    });
+    useEffect(() => {
+        const fetchAgendamentos = async () => {
+            try {
+                const response = await api.get("/api/Agendamento");
+                console.log("Dados Recebidos:", response.data);
+                const data = response.data.dados.map(agendamento => ({
+                    id: agendamento.id, 
+                    title: agendamento.title, 
+                    start: new Date(agendamento.start),
+                    end: new Date(agendamento.end),
+                }));
+                setEventos(data);
+            } catch (error) {
+                console.error('Erro ao buscar agendamentos:', error);
+            }
+        };
 
-    const moverEventos = (data) => {
-        const { start, end } = data;
-        const updatedEvents = eventos.map((event) => {
-            if (event.id === data.event.id) {
+        fetchAgendamentos();
+    }, []);
+
+    const moverEventos = async ({ event, start, end }) => {
+        const updatedEvents = eventos.map((evt) => {
+            if (evt.id === event.id) {
                 return {
-                    ...event,
+                    ...evt,
                     start: new Date(start),
                     end: new Date(end),
                 };
             }
-            return event;
+            return evt;
         });
+
         setEventos(updatedEvents);
+
+        try {
+            await api.put(`/api/Agendamento/${event.id}`, {
+                ...event,
+                start: new Date(start).toISOString(),
+                end: new Date(end).toISOString(),
+            });
+        } catch (error) {
+            console.error('Erro ao atualizar agendamento:', error);
+        }
     };
 
     const handleEventClick = (evento) => {
-        SeteventoSelecionado(evento);
+        setEventoSelecionado(evento);
     };
 
     const handleEventClose = () => {
-        SeteventoSelecionado(null);
+        setEventoSelecionado(null);
     };
 
-    const handleEventDelete= (eventId) =>{
-        // Lógica do banco (a ser implementada)
-        const updatedEvents = eventos.filter((event) => event.id !== eventId)
+    const handleEventDelete = async (eventId) => {
+        const updatedEvents = eventos.filter((event) => event.id !== eventId);
         setEventos(updatedEvents);
-        SeteventoSelecionado(null);
+        setEventoSelecionado(null);
+
+        try {
+            await api.delete(`/api/Agendamento/${eventId}`);
+        } catch (error) {
+            console.error('Erro ao excluir agendamento:', error);
+        }
     };
-
-    const handleEventUpdate = (updatedEvent) =>{
-        // Lógica do banco (a ser implementada)
-        const updatedEvents = eventos.map((event) =>{
-            if(event.id === updatedEvent.id){
-                return updatedEvent;
-            }
-            return event;
-        });
-        setEventos(updatedEvents);
-        SeteventoSelecionado(null);
-    }
-
-    const handleSelecionarAtividades = (atividadesSelecionadas) =>{
-        setEventosFiltrados(atividadesSelecionadas);
-    }
 
     return (
-        <div className='tela'>
-            <div className='toolbar p-4' style={{maxHeight:'100vh', overflowY:'auto'}}>
-                {}
-            </div>
-
-            <div className='calendario'>
-                <DragAndDropCalendar
-                    defaultDate={moment().toDate()}
-                    defaultView='month'
-                    events={eventosFiltrados}
-                    localizer={localizer}
-                    resizable
-                    onEventDrop={moverEventos}
-                    onEventResize={moverEventos}
-                    onSelectEvent={handleEventClick}
-                    eventPropGetter={eventStyle}
-                    style={{ height: '80vh' }} // Define uma altura para o calendário
-                    className='calendar'
-                />
-            </div>
+        <div className='calendario'>
+            <Calendar
+                localizer={localizer}
+                events={eventos}
+                defaultView="week"
+                selectable
+                popup
+                style={{ height: 500 }}
+                min={new Date(moment().set({ hour: 8, minute: 0 }))}
+                max={new Date(moment().set({ hour: 18, minute: 0 }))}
+                onEventDrop={moverEventos}
+                onEventResize={moverEventos}
+                onSelectEvent={handleEventClick}
+            />
         </div>
     );
 }

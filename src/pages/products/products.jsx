@@ -4,7 +4,7 @@ import { Table,  Button, Flex, Modal } from 'antd';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import Content from '../../components/Content/Content';
 import { useNavigate } from "react-router-dom"
-import {PlusCircleOutlined} from '@ant-design/icons'
+import {PlusCircleOutlined, FormOutlined} from '@ant-design/icons'
 import StyledContainer from '../../components/Container/StyledContainer';
 import api from '../../services/api';
 import ProductForm from "../products/productsForm";
@@ -67,7 +67,12 @@ const Products = () => {
     {
       title: 'Ações',
       key: 'action',
-     
+      render: (_, record) => (
+        <>
+          <Button icon={<FormOutlined />} onClick={() => handleEdit(record.id)} style={{ marginRight: 8 }}>Editar</Button>
+         
+        </>
+      ),
     },
   ];
 
