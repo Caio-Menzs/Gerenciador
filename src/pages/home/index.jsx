@@ -1,11 +1,13 @@
 import React from 'react';
-import { DollarOutlined, UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Row, Col } from 'antd'; 
+import { DollarOutlined, UserOutlined, ShoppingCartOutlined, FileTextOutlined } from '@ant-design/icons';
+import { Row, Col, List, Typography } from 'antd'; 
 import Sidebar from '../../components/Sidebar/Sidebar';
 import Content from '../../components/Content/Content';
 import DashboardCard from '../../components/Card/card';
-import { ResponsiveBar } from '@nivo/bar';
-import { ResponsivePie } from '@nivo/pie';
+import { ResponsiveBar } from '@nivo/bar'; // Importação do ResponsiveBar
+import { ResponsivePie } from '@nivo/pie'; // Importação do ResponsivePie
+
+const { Title } = Typography;
 
 const Index = () => {
   const barData = [
@@ -18,10 +20,13 @@ const Index = () => {
     { day: 'Dom', vendas: 50 },
   ];
 
-  const pieData = [
-    { id: 'Produto A', value: 45 },
-    { id: 'Produto B', value: 25 },
-    { id: 'Produto C', value: 30 },
+  // Dados fictícios das últimas ordens de serviço
+  const ordensServico = [
+    { id: 1, titulo: 'Ordem de Serviço #123', data: '2024-09-01', status: 'Concluída' },
+    { id: 2, titulo: 'Ordem de Serviço #124', data: '2024-09-02', status: 'Em andamento' },
+    { id: 3, titulo: 'Ordem de Serviço #125', data: '2024-09-03', status: 'Pendente' },
+    { id: 4, titulo: 'Ordem de Serviço #126', data: '2024-09-04', status: 'Concluída' },
+    { id: 5, titulo: 'Ordem de Serviço #127', data: '2024-09-05', status: 'Em andamento' },
   ];
 
   return (
@@ -34,7 +39,6 @@ const Index = () => {
             description="Desde o mês passado"
             trend="up"
             icon={<DollarOutlined />}
-           
           />
           <DashboardCard
             title="OS's Geradas"
@@ -82,21 +86,20 @@ const Index = () => {
           </Col>
           <Col span={12}>
             <div style={{ height: 400 }}>
-              <h3>Distribuição de Produtos</h3>
-              <ResponsivePie
-                data={pieData}
-                margin={{ top: 50, right: 50, bottom: 50, left: 50 }}
-                innerRadius={0.5}
-                padAngle={0.7}
-                cornerRadius={3}
-                colors={{ scheme: 'category10' }}
-                borderWidth={1}
-                borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
-                radialLabelsSkipAngle={10}
-                radialLabelsTextColor="#333333"
-                radialLabelsLinkColor={{ from: 'color' }}
-                sliceLabelsSkipAngle={10}
-                sliceLabelsTextColor="#333333"
+              <Title level={3}>Últimas Ordens de Serviço</Title>
+              <List
+                bordered
+                dataSource={ordensServico}
+                renderItem={item => (
+                  <List.Item>
+                    <div style={{ flex: 1 }}>
+                      <div><strong>{item.titulo}</strong></div>
+                      <div>{item.data}</div>
+                      <div>Status: {item.status}</div>
+                    </div>
+                    <FileTextOutlined style={{ fontSize: '24px', color: '#08c' }} />
+                  </List.Item>
+                )}
               />
             </div>
           </Col>

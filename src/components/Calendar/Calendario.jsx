@@ -1,25 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
-import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
-import api from '../../services/api'; 
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { Modal, Button, Input, DatePicker, Popconfirm, message } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons'; 
+import api from '../../services/api';
+import OrderForm from '../../pages/Orders/ordersForm';
 
 const localizer = momentLocalizer(moment);
+const DragAndDropCalendar = withDragAndDrop(Calendar);
+const { TextArea } = Input;
 
 function Calendario() {
     const [eventos, setEventos] = useState([]);
     const [eventoSelecionado, setEventoSelecionado] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedEvent, setEditedEvent] = useState({});
+    const [isOrderFormVisible, setIsOrderFormVisible] = useState(false); // Adicione o estado para o modal OrderForm
 
     useEffect(() => {
         const fetchAgendamentos = async () => {
             try {
                 const response = await api.get("/api/Agendamento");
-                console.log("Dados Recebidos:", response.data);
                 const data = response.data.dados.map(agendamento => ({
-                    id: agendamento.id, 
-                    title: agendamento.title, 
-                    start: new Date(agendamento.start),
-                    end: new Date(agendamento.end),
+                    id: agendamento.id,
+                    title: agendamento.title || '',
+                    start: moment.utc(agendamento.start).toDate(),
+                    end: moment.utc(agendamento.end).toDate(),
+                    description: agendamento.description || '',
                 }));
                 setEventos(data);
             } catch (error) {
@@ -47,8 +57,8 @@ function Calendario() {
         try {
             await api.put(`/api/Agendamento/${event.id}`, {
                 ...event,
-                start: new Date(start).toISOString(),
-                end: new Date(end).toISOString(),
+                start: moment(start).utc().toISOString(),
+                end: moment(end).utc().toISOString(),
             });
         } catch (error) {
             console.error('Erro ao atualizar agendamento:', error);
@@ -57,27 +67,61 @@ function Calendario() {
 
     const handleEventClick = (evento) => {
         setEventoSelecionado(evento);
+        setEditedEvent(evento);
+        setIsModalVisible(true);
     };
 
-    const handleEventClose = () => {
+    const handleModalClose = () => {
+        setIsModalVisible(false);
+        setIsEditing(false);
         setEventoSelecionado(null);
     };
 
-    const handleEventDelete = async (eventId) => {
-        const updatedEvents = eventos.filter((event) => event.id !== eventId);
-        setEventos(updatedEvents);
-        setEventoSelecionado(null);
+    const handleEditClick = () => {
+        setIsEditing(true);
+    };
 
+    const handleSaveEdit = async () => {
         try {
-            await api.delete(`/api/Agendamento/${eventId}`);
+            const updatedEvent = {
+                ...editedEvent,
+                start: new Date(editedEvent.start), 
+                end: new Date(editedEvent.end),     
+            };
+
+            await api.put(`/api/Agendamento/${updatedEvent.id}`, {
+                ...updatedEvent,
+                start: moment(updatedEvent.start).utc().toISOString(),
+                end: moment(updatedEvent.end).utc().toISOString(),
+            });
+
+            setEventos(eventos.map(evt => (evt.id === updatedEvent.id ? updatedEvent : evt)));
+            setIsEditing(false);
+            setIsModalVisible(false);
+            setEventoSelecionado(null);
         } catch (error) {
-            console.error('Erro ao excluir agendamento:', error);
+            console.error('Erro ao salvar alterações:', error);
         }
+    };
+
+    const handleDelete = async () => {
+        try {
+            await api.delete(`/api/Agendamento/${eventoSelecionado.id}`);
+            setEventos(eventos.filter(evt => evt.id !== eventoSelecionado.id));
+            setIsModalVisible(false);
+            setEventoSelecionado(null);
+        } catch (error) {
+            console.error('Erro ao deletar agendamento:', error);
+        }
+    };
+
+    const handleInputChange = (field, value) => {
+        setEditedEvent({ ...editedEvent, [field]: value });
     };
 
     return (
         <div className='calendario'>
-            <Calendar
+            <DragAndDropCalendar
                 localizer={localizer}
                 events={eventos}
                 defaultView="week"
@@ -90,6 +134,103 @@ function Calendario() {
                 onEventResize={moverEventos}
                 onSelectEvent={handleEventClick}
             />
+
+            {/* Modal de detalhes do agendamento */}
+            {eventoSelecionado && (
+                <Modal
+                    title={isEditing ? "Editar Agendamento" : "Detalhes do Agendamento"}
+                    visible={isModalVisible}
+                    onCancel={handleModalClose}
+                    footer={[
+                        isEditing ? (
+                            <Button key="save" type="primary" onClick={handleSaveEdit}>
+                                Salvar
+                            </Button>
+                        ) : (
+                            <Button key="edit" type="primary" onClick={handleEditClick}>
+                                Editar
+                            </Button>
+                        ),
+                        <Popconfirm
+                            title="Tem certeza que deseja deletar este agendamento?"
+                            onConfirm={handleDelete}
+                            okText="Sim"
+                            cancelText="Não"
+                        >
+                            <Button 
+                                key="delete" 
+                                type="primary" 
+                                danger 
+                                icon={<DeleteOutlined />}
+                            >
+                                Deletar
+                            </Button>
+                        </Popconfirm>,
+                        <Button 
+                            key="generate-order" 
+                            style={{ backgroundColor: '#FFA500', borderColor: '#FFA500' }} // Estilo laranja
+                            onClick={() => setIsOrderFormVisible(true)}
+                        >
+                            Gerar Ordem de Serviço
+                        </Button>,
+                        <Button key="close" onClick={handleModalClose}>
+                            Fechar
+                        </Button>,
+                    ]}
+                >
+                    {isEditing ? (
+                        <>
+                            <Input
+                                placeholder="Título"
+                                value={editedEvent.title}
+                                onChange={(e) => handleInputChange('title', e.target.value)}
+                            />
+                            <DatePicker
+                                showTime
+                                format="DD/MM/YYYY HH:mm"
+                                placeholder="Início"
+                                value={moment(editedEvent.start)}
+                                onChange={(date) => handleInputChange('start', date)}
+                                style={{ marginTop: 10, width: '100%' }}
+                            />
+                            <DatePicker
+                                showTime
+                                format="DD/MM/YYYY HH:mm"
+                                placeholder="Fim"
+                                value={moment(editedEvent.end)}
+                                onChange={(date) => handleInputChange('end', date)}
+                                style={{ marginTop: 10, width: '100%' }}
+                            />
+                            <TextArea
+                                placeholder="Descrição"
+                                value={editedEvent.description}
+                                onChange={(e) => handleInputChange('description', e.target.value)}
+                                style={{ marginTop: 10 }}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <p><strong>Título:</strong> {eventoSelecionado.title}</p>
+                            <p><strong>Início:</strong> {moment(eventoSelecionado.start).format('DD/MM/YYYY HH:mm')}</p>
+                            <p><strong>Fim:</strong> {moment(eventoSelecionado.end).format('DD/MM/YYYY HH:mm')}</p>
+                            <p><strong>Descrição:</strong> {eventoSelecionado.description}</p>
+                        </>
+                    )}
+                </Modal>
+            )}
+
+            {/* Modal OrderForm */}
+            {isOrderFormVisible && (
+                <Modal
+                    title="Nova Ordem de Serviço"
+                    visible={isOrderFormVisible}
+                    onCancel={() => setIsOrderFormVisible(false)}
+                    footer={null} 
+                    width={800}
+                >
+                    <OrderForm onClose={() => setIsOrderFormVisible(false)} />
+                </Modal>
+            )}
         </div>
     );
 }

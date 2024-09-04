@@ -1,35 +1,31 @@
-import React, { useEffect, useState } from 'react';  
+import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { Table, Button, Flex, Modal, Input } from 'antd';
+import { Table, Button, Flex, Modal } from 'antd';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import Content from '../../components/Content/Content';
 import { useNavigate } from "react-router-dom";
 import { PlusCircleOutlined } from '@ant-design/icons';
 import StyledContainer from '../../components/Container/StyledContainer';
 import api from '../../services/api';
-import ProductForm from "../products/productsForm";
+import OrderForm from './ordersForm';
 
 const Orders = () => {
-  const [orders, setOrders] = useState([]); 
+  const [orders, setOrders] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [filteredOrders, setFilteredOrders] = useState([]); 
-
   const navigate = useNavigate();
-  const { Search } = Input;
 
   useEffect(() => {
-    const getOrders = async () => { 
+    const getOrders = async () => {
       try {
-        const response = await api.get("/api/Produto"); 
+        const response = await api.get("/api/OrdemServico");
         console.log("Dados Recebidos:", response.data);
-        const data = response.data.dados.map(order => ({ 
+        const data = response.data.dados.map(order => ({
           ...order,
           key: order.id,
         }));
-        setOrders(data); 
+        setOrders(data);
       } catch (error) {
-        console.error('Erro ao buscar ordens:', error); 
+        console.error('Erro ao buscar ordens:', error);
       }
     };
 
@@ -41,7 +37,6 @@ const Orders = () => {
       title: 'N°',
       dataIndex: 'id',
       key: 'id',
-      render: (text) => <a>{text}</a>,
     },
     {
       title: 'Cliente',
@@ -49,24 +44,43 @@ const Orders = () => {
       key: 'cliente',
     },
     {
-      title: 'Responsável',
-      dataIndex: 'responsavel',
-      key: 'responsavel',
+      title: 'Técnico',
+      dataIndex: 'tecnico',
+      key: 'tecnico',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
     },
     {
       title: 'Data Inicial',
-      dataIndex: 'datai',
-      key: 'datai',
+      dataIndex: 'dataInicio',
+      key: 'dataInicio',
+      render: (text) => new Date(text).toLocaleDateString(),
     },
     {
       title: 'Data Final',
-      dataIndex: 'dataf',
-      key: 'dataf',
+      dataIndex: 'dataFinal',
+      key: 'dataFinal',
+      render: (text) => new Date(text).toLocaleDateString(),
     },
     {
-      title: 'Valor',
-      dataIndex: 'valor',
-      key: 'valor',
+      title: 'Garantia',
+      dataIndex: 'garantia',
+      key: 'garantia',
+    },
+    {
+      title: 'Descrição',
+      dataIndex: 'descricao',
+      key: 'descricao',
+    },
+    {
+      title: 'Valor Total',
+      key: 'valorTotal',
+      render: (text, record) => (
+        `${(record.precoProduto * record.quantidadeProduto + record.precoServico * record.quantidadeServico).toFixed(2)}`
+      ),
     },
     {
       title: 'Ações',
@@ -78,7 +92,7 @@ const Orders = () => {
   ];
 
   const handleEdit = (id) => {
-    navigate(`/products/form/${id}`);
+    navigate(`/orders/form/${id}`); // Alterado para a rota de ordem de serviço
   };
 
   const showModal = () => {
@@ -93,27 +107,27 @@ const Orders = () => {
     <Sidebar>
       <Content>
         <Flex gap="small" wrap="wrap">
-          <CustomButton icon={<PlusCircleOutlined />} label="OS" onClick={showModal} />
-        </Flex> 
+          <CustomButton icon={<PlusCircleOutlined />} label="Novo" onClick={showModal} />
+        </Flex>
 
         <StyledContainer>
-          <h3  style={{ marginTop: '20px' }} >Ordens de Serviços</h3>
-          <Table 
-            columns={columns} 
-            dataSource={orders} 
+          <h3 style={{ marginTop: '20px' }}>Ordens de Serviço</h3>
+          <Table
+            columns={columns}
+            dataSource={orders}
             rowKey="id"
           />
         </StyledContainer>
 
-        <Modal 
-          title="Novo Produto"
+        <Modal
+          title="Nova Ordem de Serviço"
           visible={isModalVisible}
           onCancel={handleCancel}
           footer={null}
         >
-          <ProductForm onClose={handleCancel} /> {}
+          <OrderForm onClose={handleCancel} /> {/* Alterado para o formulário de ordem de serviço */}
         </Modal>
-      </Content>  
+      </Content>
     </Sidebar>
   );
 }
