@@ -18,7 +18,7 @@ function Calendario() {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editedEvent, setEditedEvent] = useState({});
-    const [isOrderFormVisible, setIsOrderFormVisible] = useState(false); // Adicione o estado para o modal OrderForm
+    const [isOrderFormVisible, setIsOrderFormVisible] = useState(false); 
 
     useEffect(() => {
         const fetchAgendamentos = async () => {
@@ -30,6 +30,7 @@ function Calendario() {
                     start: moment.utc(agendamento.start).toDate(),
                     end: moment.utc(agendamento.end).toDate(),
                     description: agendamento.description || '',
+                    ordemGerada: agendamento.ordemGerada || 0, // Adicione isso se for relevante para o seu caso
                 }));
                 setEventos(data);
             } catch (error) {
@@ -117,6 +118,21 @@ function Calendario() {
 
     const handleInputChange = (field, value) => {
         setEditedEvent({ ...editedEvent, [field]: value });
+    };
+
+    const handleOrderSaved = async () => {
+        try {
+            await api.put(`/api/Agendamento/${eventoSelecionado.id}`, {
+                ordemGerada: 1
+            });
+            setEventos(eventos.map(evt => (
+                evt.id === eventoSelecionado.id ? { ...evt, ordemGerada: 1 } : evt
+            )));
+            setIsOrderFormVisible(false);
+            setIsModalVisible(false);
+        } catch (error) {
+            console.error('Erro ao atualizar coluna OrdemGerada:', error);
+        }
     };
 
     return (
@@ -228,7 +244,7 @@ function Calendario() {
                     footer={null} 
                     width={800}
                 >
-                    <OrderForm onClose={() => setIsOrderFormVisible(false)} />
+                    <OrderForm onClose={() => setIsOrderFormVisible(false)} onOrderSaved={handleOrderSaved} />
                 </Modal>
             )}
         </div>
