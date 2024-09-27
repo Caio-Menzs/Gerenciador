@@ -30,7 +30,7 @@ function Calendario() {
                     start: moment.utc(agendamento.start).toDate(),
                     end: moment.utc(agendamento.end).toDate(),
                     description: agendamento.description || '',
-                    ordemGerada: agendamento.ordemGerada || 0, // Adicione isso se for relevante para o seu caso
+                    OrdemGerada: agendamento.OrdemGerada || false,
                 }));
                 setEventos(data);
             } catch (error) {
@@ -62,7 +62,7 @@ function Calendario() {
                 end: moment(end).utc().toISOString(),
             });
         } catch (error) {
-            console.error('Erro ao atualizar agendamento:', error);
+            console.error('Erro ao atualizar agendamento:', error.response ? error.response.data : error.message);
         }
     };
 
@@ -86,8 +86,8 @@ function Calendario() {
         try {
             const updatedEvent = {
                 ...editedEvent,
-                start: new Date(editedEvent.start), 
-                end: new Date(editedEvent.end),     
+                start: new Date(editedEvent.start),
+                end: new Date(editedEvent.end),
             };
 
             await api.put(`/api/Agendamento/${updatedEvent.id}`, {
@@ -101,7 +101,7 @@ function Calendario() {
             setIsModalVisible(false);
             setEventoSelecionado(null);
         } catch (error) {
-            console.error('Erro ao salvar alterações:', error);
+            console.error('Erro ao salvar alterações:', error.response ? error.response.data : error.message);
         }
     };
 
@@ -112,7 +112,7 @@ function Calendario() {
             setIsModalVisible(false);
             setEventoSelecionado(null);
         } catch (error) {
-            console.error('Erro ao deletar agendamento:', error);
+            console.error('Erro ao deletar agendamento:', error.response ? error.response.data : error.message);
         }
     };
 
@@ -123,15 +123,25 @@ function Calendario() {
     const handleOrderSaved = async () => {
         try {
             await api.put(`/api/Agendamento/${eventoSelecionado.id}`, {
-                ordemGerada: 1
+                ...eventoSelecionado,
+                OrdemGerada: true // Atualiza o campo OrdemGerada
             });
-            setEventos(eventos.map(evt => (
-                evt.id === eventoSelecionado.id ? { ...evt, ordemGerada: 1 } : evt
-            )));
+            // Recarregue os eventos do servidor
+            const response = await api.get("/api/Agendamento");
+            const data = response.data.dados.map(agendamento => ({
+                id: agendamento.id,
+                title: agendamento.title || '',
+                start: moment.utc(agendamento.start).toDate(),
+                end: moment.utc(agendamento.end).toDate(),
+                description: agendamento.description || '',
+                OrdemGerada: agendamento.OrdemGerada || false,
+            }));
+            setEventos(data);
             setIsOrderFormVisible(false);
             setIsModalVisible(false);
         } catch (error) {
-            console.error('Erro ao atualizar coluna OrdemGerada:', error);
+            console.error('Erro ao atualizar coluna OrdemGerada:', error.response ? error.response.data : error.message);
+            message.error('Erro ao atualizar ordem de serviço.');
         }
     };
 
@@ -182,13 +192,16 @@ function Calendario() {
                                 Deletar
                             </Button>
                         </Popconfirm>,
-                        <Button 
-                            key="generate-order" 
-                            style={{ backgroundColor: '#FFA500', borderColor: '#FFA500' }} // Estilo laranja
-                            onClick={() => setIsOrderFormVisible(true)}
-                        >
-                            Gerar Ordem de Serviço
-                        </Button>,
+                        // Condicional para mostrar o botão "Gerar Ordem de Serviço"
+                        (!eventoSelecionado.OrdemGerada && (
+                            <Button 
+                                key="generate-order" 
+                                style={{ backgroundColor: '#FFA500', borderColor: '#FFA500' }} // Estilo laranja
+                                onClick={() => setIsOrderFormVisible(true)}
+                            >
+                                Gerar Ordem de Serviço
+                            </Button>
+                        )),
                         <Button key="close" onClick={handleModalClose}>
                             Fechar
                         </Button>,

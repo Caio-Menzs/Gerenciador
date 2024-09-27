@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Row, Col, Select, Tabs } from 'antd';
 import axios from 'axios';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Importando o estilo básico do Quill
+import 'react-quill/dist/quill.snow.css';
 
 const { Item } = Form;
 const { Option } = Select;
@@ -11,7 +11,6 @@ const { TabPane } = Tabs;
 const OrderForm = ({ onClose, onOrderSaved }) => {
   const [form] = Form.useForm();
   const [clientes, setClientes] = useState([]);
-  const [tecnicos, setTecnicos] = useState([]);
   const [produtos, setProdutos] = useState([]);
   const [servicos, setServicos] = useState([]);
 
@@ -20,8 +19,11 @@ const OrderForm = ({ onClose, onOrderSaved }) => {
   const [observacoes, setObservacoes] = useState('');
   const [laudo, setLaudo] = useState('');
 
-  useEffect(() => {
-    // Fetch clients
+  const [clienteSelecionado, setClienteSelecionado] = useState(null);
+  const [produtoSelecionado, setProdutoSelecionado] = useState(null);
+  const [servicoSelecionado, setServicoSelecionado] = useState(null);
+
+  const fetchData = () => {
     axios.get('https://localhost:7183/api/Cliente')
       .then(response => {
         if (response.data && Array.isArray(response.data.dados)) {
@@ -35,21 +37,6 @@ const OrderForm = ({ onClose, onOrderSaved }) => {
         message.error('Erro ao carregar lista de clientes.');
       });
 
-    // Fetch technicians
-    axios.get('https://localhost:7183/api/Tecnico')
-      .then(response => {
-        if (response.data && Array.isArray(response.data.dados)) {
-          setTecnicos(response.data.dados);
-        } else {
-          message.error('Formato de dados de técnicos inválido.');
-        }
-      })
-      .catch(error => {
-        console.error('Erro ao buscar técnicos:', error);
-        message.error('Erro ao carregar lista de técnicos.');
-      });
-
-    // Fetch products
     axios.get('https://localhost:7183/api/Produto')
       .then(response => {
         if (response.data && Array.isArray(response.data.dados)) {
@@ -63,7 +50,6 @@ const OrderForm = ({ onClose, onOrderSaved }) => {
         message.error('Erro ao carregar lista de produtos.');
       });
 
-    // Fetch services
     axios.get('https://localhost:7183/api/Servico')
       .then(response => {
         if (response.data && Array.isArray(response.data.dados)) {
@@ -76,58 +62,136 @@ const OrderForm = ({ onClose, onOrderSaved }) => {
         console.error('Erro ao buscar serviços:', error);
         message.error('Erro ao carregar lista de serviços.');
       });
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  const onFinish = (values) => {
-    const apiData = {
-      id: 0,
-      cliente: values.cliente || '',
-      tecnico: values.tecnico || '',
-      status: values.status || '',
-      dataInicio: values.dataInicio || '',
-      dataFinal: values.dataFinal || '',
-      garantia: parseInt(values.garantia, 10) || 0,
-      termoGarantia: values.termoGarantia || '',
-      descricao: descricao || '',
-      defeito: defeito || '',
-      observacoes: observacoes || '',
-      laudo: laudo || '',
-      produto: values.produto || '',
-      precoProduto: parseFloat(values.precoProduto) || 0,
-      quantidadeProduto: parseInt(values.quantidadeProduto, 10) || 0,
-      servico: values.servico || '',
-      precoServico: parseFloat(values.precoServico) || 0,
-      quantidadeServico: parseInt(values.quantidadeServico, 10) || 0,
-    };
+  const formatDate = (date) => {
+    if (!date) return null;
+    return new Date(date).toISOString();
+  };
 
-    axios.post('https://localhost:7183/api/OrdemServico/create', apiData, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => {
-      message.success('Dados enviados com sucesso!');
-      form.resetFields();
-      setDescricao('');
-      setDefeito('');
-      setObservacoes('');
-      setLaudo('');
-      if (onClose) {
-        onClose();
-      }
-      if (onOrderSaved) {
-        onOrderSaved(); // Chama o callback quando a ordem for salva
-      }
-    })
-    .catch(error => {
-      if (error.response) {
-        message.error(`Erro ${error.response.status}: ${error.response.data.mensagem || 'Erro desconhecido'}`);
-      } else if (error.request) {
-        message.error('Não foi possível conectar à API.');
-      } else {
-        message.error('Erro ao processar a requisição.');
-      }
-    });
+  const removeHtmlTags = (html) => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || '';
+  };
+
+  const onFinish = (values) => {
+    if (!clienteSelecionado) {
+      message.error('Por favor, selecione um cliente.');
+      return;
+    }
+  
+    const ordemServicoData = {
+      id_Ordem: 0,
+      id_Cliente: clienteSelecionado.id,
+      cliente: clienteSelecionado.nome,
+      tecnico: values.tecnico || null,
+      status: values.status || null,
+      dataInicio: formatDate(values.dataInicio) || null,
+      dataFinal: formatDate(values.dataFinal) || null,
+      garantia: values.garantia ? parseInt(values.garantia, 10) : 0,
+      termoGarantia: values.termoGarantia || null,
+      descricao: removeHtmlTags(descricao) || null,
+      defeito: removeHtmlTags(defeito) || null,
+      observacoes: removeHtmlTags(observacoes) || null,
+      laudo: removeHtmlTags(laudo) || null,
+    };
+  
+    console.log("Dados da ordem de serviço:", ordemServicoData);
+  
+    let ordemId; 
+  
+    axios.post('https://localhost:7183/api/OrdemServico/create', ordemServicoData)
+      .then(response => {
+        console.log('Resposta da criação da ordem:', response);
+        ordemId = response.data.dados[0]?.id_Ordem; 
+        if (!ordemId) {
+          message.error('Erro ao obter o ID da ordem de serviço.');
+          return;
+        }
+  
+        if (!produtoSelecionado) {
+          message.error('Por favor, selecione um produto.');
+          return;
+        }
+  
+        const produtoData = {
+          id: 0,
+          iD_Ordem: ordemId,
+          iD_Produto: produtoSelecionado,
+          produto: produtos.find(produto => produto.id === produtoSelecionado)?.descricao || '',
+          precoProduto: values.precoProduto ? parseFloat(values.precoProduto) : 0.0,
+          quantidadeProduto: values.quantidadeProduto ? parseInt(values.quantidadeProduto, 10) : 0,
+        };
+  
+        console.log('Dados do produto da ordem de serviço:', produtoData);
+        return axios.post('https://localhost:7183/api/OrdemServicoProduto', produtoData);
+      })
+      .then(() => {
+        console.log('Produto criado com sucesso.');
+        if (!servicoSelecionado) {
+          message.error('Por favor, selecione um serviço.');
+          return;
+        }
+  
+        const servicoData = {
+          id: 0,
+          id_Ordem: ordemId, 
+          id_Servico: servicoSelecionado,
+          servico: servicos.find(servico => servico.id === servicoSelecionado)?.descricao || '', 
+          precoServico: values.precoServico ? parseFloat(values.precoServico) : 0.0,
+          quantidadeServico: values.quantidadeServico ? parseInt(values.quantidadeServico, 10) : 0,
+        };
+  
+        console.log('Preparando dados do serviço:', servicoData);
+        return axios.post('https://localhost:7183/api/OrdemServicoServico', servicoData);
+      })
+      .then(() => {
+        message.success('Dados enviados com sucesso!');
+        form.resetFields();
+        setDescricao('');
+        setDefeito('');
+        setObservacoes('');
+        setLaudo('');
+        setClienteSelecionado(null);
+        setProdutoSelecionado(null);
+        setServicoSelecionado(null);
+        
+        fetchData();
+  
+        if (onClose) {
+          onClose();
+        }
+        if (onOrderSaved) {
+          onOrderSaved();
+        }
+      })
+      .catch(error => {
+        if (error.response) {
+          console.error("Erro de resposta:", error.response.data);
+          message.error(`Erro ${error.response.status}: ${error.response.data.message || 'Erro desconhecido'}`);
+        } else {
+          console.error('Erro ao processar a requisição:', error);
+          message.error('Erro ao processar a requisição.');
+        }
+      });
+  };
+
+  const handleClienteChange = (value) => {
+    const cliente = clientes.find(cliente => cliente.id === value);
+    setClienteSelecionado(cliente);
+  };
+
+  const handleProdutoChange = (value) => {
+    setProdutoSelecionado(value);
+  };
+
+  const handleServicoChange = (value) => {
+    setServicoSelecionado(value);
   };
 
   return (
@@ -149,16 +213,12 @@ const OrderForm = ({ onClose, onOrderSaved }) => {
                   name="cliente"
                   rules={[{ required: true, message: 'Por favor, selecione um cliente!' }]}
                 >
-                  <Select placeholder="Selecione um cliente">
-                    {clientes.length > 0 ? (
-                      clientes.map(cliente => (
-                        <Option key={cliente.id} value={cliente.id}>
-                          {cliente.nome}
-                        </Option>
-                      ))
-                    ) : (
-                      <Option disabled>Nenhum cliente disponível</Option>
-                    )}
+                  <Select placeholder="Selecione um cliente" onChange={handleClienteChange}>
+                    {clientes.map(cliente => (
+                      <Option key={cliente.id} value={cliente.id}>
+                        {cliente.nome}
+                      </Option>
+                    ))}
                   </Select>
                 </Item>
               </Col>
@@ -166,9 +226,9 @@ const OrderForm = ({ onClose, onOrderSaved }) => {
                 <Item
                   label="Técnico"
                   name="tecnico"
-                  rules={[{ required: true, message: 'Por favor, selecione um técnico!' }]}
+                  rules={[{ required: true, message: 'Por favor, insira o nome do técnico!' }]}
                 >
-                <Input />
+                  <Input />
                 </Item>
               </Col>
             </Row>
@@ -224,32 +284,39 @@ const OrderForm = ({ onClose, onOrderSaved }) => {
             </Row>
 
             <Row gutter={16}>
-              <Col span={12}>
-                <Item label="Descrição" name="descricao">
+              <Col span={24}>
+              <Item label="Descrição">
                   <ReactQuill value={descricao} onChange={setDescricao} />
                 </Item>
               </Col>
-              <Col span={12}>
-                <Item label="Defeito" name="defeito">
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={24}>
+                <Item label="Defeito">
                   <ReactQuill value={defeito} onChange={setDefeito} />
                 </Item>
               </Col>
             </Row>
 
             <Row gutter={16}>
-              <Col span={12}>
-                <Item label="Observações" name="observacoes">
+              <Col span={24}>
+                <Item label="Observações">
                   <ReactQuill value={observacoes} onChange={setObservacoes} />
                 </Item>
               </Col>
-              <Col span={12}>
-                <Item label="Laudo" name="laudo">
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={24}>
+                <Item label="Laudo">
                   <ReactQuill value={laudo} onChange={setLaudo} />
                 </Item>
               </Col>
             </Row>
           </TabPane>
-          <TabPane tab="Produtos e Serviços" key="2">
+          
+          <TabPane tab="Produtos" key="2">
             <Row gutter={16}>
               <Col span={12}>
                 <Item
@@ -257,33 +324,20 @@ const OrderForm = ({ onClose, onOrderSaved }) => {
                   name="produto"
                   rules={[{ required: true, message: 'Por favor, selecione um produto!' }]}
                 >
-                  <Select placeholder="Selecione um produto">
-                    {produtos.length > 0 ? (
-                      produtos.map(produto => (
-                        <Option key={produto.id} value={produto.id}>
-                          {produto.nome}
-                        </Option>
-                      ))
-                    ) : (
-                      <Option disabled>Nenhum produto disponível</Option>
-                    )}
+                  <Select onChange={handleProdutoChange}>
+                    {produtos.map(produto => (
+                      <Option key={produto.id} value={produto.id}>
+                        {produto.descricao}
+                      </Option>
+                    ))}
                   </Select>
                 </Item>
               </Col>
-              <Col span={6}>
+              <Col span={12}>
                 <Item
-                  label="Preço do Produto"
+                  label="Preço"
                   name="precoProduto"
-                  rules={[{ required: true, message: 'Por favor, insira o preço do produto!' }]}
-                >
-                  <Input type="number" step="0.01" />
-                </Item>
-              </Col>
-              <Col span={6}>
-                <Item
-                  label="Quantidade do Produto"
-                  name="quantidadeProduto"
-                  rules={[{ required: true, message: 'Por favor, insira a quantidade do produto!' }]}
+                  rules={[{ required: true, message: 'Por favor, insira o preço!' }]}
                 >
                   <Input type="number" />
                 </Item>
@@ -293,37 +347,50 @@ const OrderForm = ({ onClose, onOrderSaved }) => {
             <Row gutter={16}>
               <Col span={12}>
                 <Item
+                  label="Quantidade"
+                  name="quantidadeProduto"
+                  rules={[{ required: true, message: 'Por favor, insira a quantidade!' }]}
+                >
+                  <Input type="number" />
+                </Item>
+              </Col>
+            </Row>
+          </TabPane>
+
+          <TabPane tab="Serviços" key="3">
+            <Row gutter={16}>
+              <Col span={12}>
+                <Item
                   label="Serviço"
                   name="servico"
                   rules={[{ required: true, message: 'Por favor, selecione um serviço!' }]}
                 >
-                  <Select placeholder="Selecione um serviço">
-                    {servicos.length > 0 ? (
-                      servicos.map(servico => (
-                        <Option key={servico.id} value={servico.id}>
-                          {servico.nome}
-                        </Option>
-                      ))
-                    ) : (
-                      <Option disabled>Nenhum serviço disponível</Option>
-                    )}
+                  <Select onChange={handleServicoChange}>
+                    {servicos.map(servico => (
+                      <Option key={servico.id} value={servico.id}>
+                        {servico.nome}
+                      </Option>
+                    ))}
                   </Select>
                 </Item>
               </Col>
-              <Col span={6}>
+              <Col span={12}>
                 <Item
-                  label="Preço do Serviço"
+                  label="Preço"
                   name="precoServico"
-                  rules={[{ required: true, message: 'Por favor, insira o preço do serviço!' }]}
+                  rules={[{ required: true, message: 'Por favor, insira o preço!' }]}
                 >
-                  <Input type="number" step="0.01" />
+                  <Input type="number" />
                 </Item>
               </Col>
-              <Col span={6}>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={12}>
                 <Item
-                  label="Quantidade do Serviço"
+                  label="Quantidade"
                   name="quantidadeServico"
-                  rules={[{ required: true, message: 'Por favor, insira a quantidade do serviço!' }]}
+                  rules={[{ required: true, message: 'Por favor, insira a quantidade!' }]}
                 >
                   <Input type="number" />
                 </Item>

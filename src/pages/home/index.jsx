@@ -1,15 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { DollarOutlined, UserOutlined, ShoppingCartOutlined, FileTextOutlined } from '@ant-design/icons';
-import { Row, Col, List, Typography } from 'antd'; 
+import { Row, Col, List, Typography, message } from 'antd'; 
 import Sidebar from '../../components/Sidebar/Sidebar';
 import Content from '../../components/Content/Content';
 import DashboardCard from '../../components/Card/card';
-import { ResponsiveBar } from '@nivo/bar'; // Importação do ResponsiveBar
-import { ResponsivePie } from '@nivo/pie'; // Importação do ResponsivePie
+import { ResponsiveBar } from '@nivo/bar';
 
 const { Title } = Typography;
 
 const Index = () => {
+  const [ordensServico, setOrdensServico] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [totalOrdens, setTotalOrdens] = useState(0); 
+  const [totalProducts, setTotalProducts] = useState(0);
+
   const barData = [
     { day: 'Seg', vendas: 50 },
     { day: 'Ter', vendas: 80 },
@@ -20,14 +26,30 @@ const Index = () => {
     { day: 'Dom', vendas: 50 },
   ];
 
-  // Dados fictícios das últimas ordens de serviço
-  const ordensServico = [
-    { id: 1, titulo: 'Ordem de Serviço #123', data: '2024-09-01', status: 'Concluída' },
-    { id: 2, titulo: 'Ordem de Serviço #124', data: '2024-09-02', status: 'Em andamento' },
-    { id: 3, titulo: 'Ordem de Serviço #125', data: '2024-09-03', status: 'Pendente' },
-    { id: 4, titulo: 'Ordem de Serviço #126', data: '2024-09-04', status: 'Concluída' },
-    { id: 5, titulo: 'Ordem de Serviço #127', data: '2024-09-05', status: 'Em andamento' },
-  ];
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('https://localhost:7183/api/OrdemServico'); 
+      if (response.data && Array.isArray(response.data.dados)) {
+        const limitedOrdens = response.data.dados.slice(0, 4); 
+        setOrdensServico(limitedOrdens);
+        setTotalOrdens(response.data.dados.length);
+      } else {
+        message.error('Formato de dados de OS inválido.');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar OS:', error);
+      message.error('Erro ao carregar lista de OS.');
+      setError('Erro ao carregar lista de OS.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <Sidebar>
@@ -42,7 +64,7 @@ const Index = () => {
           />
           <DashboardCard
             title="OS's Geradas"
-            value={234}
+            value={totalOrdens} 
             description="Desde a semana passada"
             trend="down"
             icon={<UserOutlined />}
@@ -50,7 +72,7 @@ const Index = () => {
           />
           <DashboardCard
             title="Produtos Vendidos"
-            value={345}
+            value={totalProducts}
             description="Desde ontem"
             trend="up"
             icon={<ShoppingCartOutlined />}
@@ -89,18 +111,20 @@ const Index = () => {
               <Title level={3}>Últimas Ordens de Serviço</Title>
               <List
                 bordered
+                loading={loading}
                 dataSource={ordensServico}
                 renderItem={item => (
                   <List.Item>
                     <div style={{ flex: 1 }}>
-                      <div><strong>{item.titulo}</strong></div>
-                      <div>{item.data}</div>
-                      <div>Status: {item.status}</div>
+                      <div><strong>{item.descricao || 'Sem descrição'}</strong></div>
+                      <div>Início: {new Date(item.dataInicio).toLocaleDateString()}</div>
+                      <div>Status: {item.status || 'Não definido'}</div>
                     </div>
                     <FileTextOutlined style={{ fontSize: '24px', color: '#08c' }} />
                   </List.Item>
                 )}
               />
+              {error && <div style={{ color: 'red' }}>Erro: {error}</div>}
             </div>
           </Col>
         </Row>
