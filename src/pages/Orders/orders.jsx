@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { Table, Button, Flex, Modal } from 'antd';
+import { Table, Button, Flex } from 'antd';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import Content from '../../components/Content/Content';
 import { useNavigate } from "react-router-dom";
 import { PlusCircleOutlined } from '@ant-design/icons';
 import StyledContainer from '../../components/Container/StyledContainer';
 import api from '../../services/api';
-import OrderForm from './ordersForm';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,9 +32,9 @@ const Orders = () => {
 
   const columns = [
     {
-      title: 'N°',
-      dataIndex: 'id',
-      key: 'id',
+      title: 'N° OS',
+      dataIndex: 'Id_Ordem',
+      key: 'Id_Ordem',
     },
     {
       title: 'Cliente',
@@ -47,11 +45,6 @@ const Orders = () => {
       title: 'Técnico',
       dataIndex: 'tecnico',
       key: 'tecnico',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
     },
     {
       title: 'Data Inicial',
@@ -71,16 +64,16 @@ const Orders = () => {
       key: 'garantia',
     },
     {
-      title: 'Descrição',
-      dataIndex: 'descricao',
-      key: 'descricao',
-    },
-    {
       title: 'Valor Total',
       key: 'valorTotal',
       render: (text, record) => (
         `${(record.precoProduto * record.quantidadeProduto + record.precoServico * record.quantidadeServico).toFixed(2)}`
       ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
     },
     {
       title: 'Ações',
@@ -92,22 +85,18 @@ const Orders = () => {
   ];
 
   const handleEdit = (id) => {
-    navigate(`/orders/form/${id}`); // Alterado para a rota de ordem de serviço
+    navigate(`orders-form/${id}`); // Alterado para a rota de ordem de serviço
   };
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
+  const handleNewOrder = () => {
+    navigate('/orders-form'); // Navega para o formulário de nova ordem
   };
 
   return (
     <Sidebar>
       <Content>
         <Flex gap="small" wrap="wrap">
-          <CustomButton icon={<PlusCircleOutlined />} label="Novo" onClick={showModal} />
+          <CustomButton icon={<PlusCircleOutlined />} label="Novo" onClick={handleNewOrder} />
         </Flex>
 
         <StyledContainer>
@@ -118,15 +107,6 @@ const Orders = () => {
             rowKey="id"
           />
         </StyledContainer>
-
-        <Modal
-          title="Nova Ordem de Serviço"
-          visible={isModalVisible}
-          onCancel={handleCancel}
-          footer={null}
-        >
-          <OrderForm onClose={handleCancel} /> {/* Alterado para o formulário de ordem de serviço */}
-        </Modal>
       </Content>
     </Sidebar>
   );

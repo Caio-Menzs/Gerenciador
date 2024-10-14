@@ -90,7 +90,7 @@ const Index = () => {
         <Row gutter={16} style={{ marginTop: 24 }}>
           <Col span={12}>
             <div style={{ height: 400 }}>
-              <h3>Vendas Semanais</h3>
+              <h3>Faturamento Mensal</h3>
               <ResponsiveBar 
                 data={barData}
                 keys={['vendas']}
@@ -128,8 +128,8 @@ const Index = () => {
             </div>
           </Col>
         </Row>
-      </Content>
-    </Sidebar>
+        </Content>
+        </Sidebar>
   );
 };
 
